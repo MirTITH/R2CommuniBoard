@@ -64,7 +64,6 @@ void UC_Send(uint8_t ID, UART_HandleTypeDef *huart, UC_Data_t *data_to_send);
  */
 void UC_RxCpltCallback(UART_HandleTypeDef *huart);
 
-
 // 统计值
 typedef struct 
 {

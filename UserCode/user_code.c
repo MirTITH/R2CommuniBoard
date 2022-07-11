@@ -31,7 +31,7 @@ defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
 extern int fix_counter;
 
-bool pnt_UC_Debug_Data = false;
+bool pnt_UC_Debug_Data = true;
 
 void TestTask(void const *argument);
 
@@ -73,7 +73,7 @@ void TestTask(void const *argument)
 
 		UD_printf("lx:%5d ly:%5d rx:%5d ry:%5d ", RxData.Leftx, RxData.Lefty, RxData.Rightx, RxData.Righty);
 		UD_printf("but:%x\n", RxData.buttons);
-		UD_printf("fix counter: %d\n", fix_counter);
+		// UD_printf("fix counter: %d\n", fix_counter);
 		osDelay(500);
 	}
 }
