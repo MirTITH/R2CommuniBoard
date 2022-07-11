@@ -47,6 +47,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.c</locationURI>
 		</link>
 		<link>
+			<name>Drivers/STM32L4xx_HAL_Driver/stm32l4xx_hal_can.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_can.c</locationURI>
+		</link>
+		<link>
 			<name>Drivers/STM32L4xx_HAL_Driver/stm32l4xx_hal_cortex.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c</locationURI>
@@ -195,6 +200,11 @@
 			<name>Middlewares/FreeRTOS/timers.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Middlewares/Third_Party/FreeRTOS/Source/timers.c</locationURI>
+		</link>
+		<link>
+			<name>Application/User/Core/can.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/can.c</locationURI>
 		</link>
 		<link>
 			<name>Application/User/Core/crc.c</name>
