@@ -53,7 +53,7 @@
     },
     "options": "null"
   },
-  "uploader": "JLink",
+  "uploader": "OpenOCD",
   "srcDirs": [
     "./.eide/deps",
     "./Core",
@@ -73,14 +73,9 @@
   "packDir": null,
   "uploadConfig": {
     "bin": "",
-    "baseAddr": "0x08000000",
-    "cpuInfo": {
-      "vendor": "ST",
-      "cpuName": "STM32L431RC"
-    },
-    "proType": 1,
-    "speed": 8000,
-    "otherCmds": ""
+    "target": "stm32l4x",
+    "interface": "stlink",
+    "baseAddr": "0x08000000"
   },
   "uploadConfigMap": {
     "JLink": {
@@ -88,7 +83,7 @@
       "baseAddr": "0x08000000",
       "cpuInfo": {
         "vendor": "ST",
-        "cpuName": "STM32F103C8"
+        "cpuName": "STM32L431RC"
       },
       "proType": 1,
       "speed": 8000,
@@ -97,7 +92,7 @@
     "OpenOCD": {
       "bin": "",
       "target": "stm32l4x",
-      "interface": "jlink_sw",
+      "interface": "jlink-sw",
       "baseAddr": "0x08000000"
     }
   },

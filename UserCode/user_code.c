@@ -33,8 +33,8 @@ void StartDefaultTask(void const *argument)
 {
 	osDelay(500);
 
-	CLI_Init(&huart6);
-	UD_SetPrintfDevice(UD_Find(&huart6));
+	// CLI_Init(&huart3);
+	// UD_SetPrintfDevice(UD_Find(&huart3));
 
 	osThreadDef(testTask, TestTask, osPriorityNormal, 0, 256);
 	osThreadCreate(osThread(testTask), NULL);
@@ -46,7 +46,7 @@ void StartDefaultTask(void const *argument)
 	DJI_motorType_Init();
 	CANFilterInit(&hcan1);
 
-	WTR_MAVLink_Init(&huart3, MAVLINK_COMM_0);
+	WTR_MAVLink_Init(&huart1, MAVLINK_COMM_0);
 	WTR_MAVLink_RcvStart(MAVLINK_COMM_0);
 
 	UpperTaskStart(&UpperData);

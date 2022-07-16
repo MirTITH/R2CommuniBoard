@@ -13,7 +13,7 @@
 #include <stdio.h>
 
 // 串口号配置
-#define UART_Printf_Config_huart huart6
+#define UART_Printf_Config_huart huart1
 
 /* 重定向printf */
 

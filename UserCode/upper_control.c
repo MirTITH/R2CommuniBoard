@@ -34,8 +34,8 @@ void UpperTaskInit()
 	hDJI[2].motorType = M3508;
 	hDJI[2].speedPID.outputMax = 2000;
 
-	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
-	HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2);
+	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
 }
 
 void UpperTask(void const *argument)
@@ -68,8 +68,8 @@ void UpperTask(void const *argument)
 		}
 
 		// 爪子舵机
-		__HAL_TIM_SetCompare(&htim4, TIM_CHANNEL_1, UpperData->claw_OC_L);
-		__HAL_TIM_SetCompare(&htim12, TIM_CHANNEL_2, UpperData->claw_OC_R);
+		__HAL_TIM_SetCompare(&htim2, TIM_CHANNEL_1, UpperData->claw_OC_L); // PA5
+		__HAL_TIM_SetCompare(&htim16, TIM_CHANNEL_1, UpperData->claw_OC_R); // PA6
 
 		// 爪子旋转
 		if (UpperData->servo_type & (1 << 2))
@@ -109,7 +109,6 @@ void UpperTask(void const *argument)
 							 hDJI[1].speedPID.output,
 							 hDJI[2].speedPID.output,
 							 hDJI[3].speedPID.output);
-
 		osDelayUntil(&PreviousWakeTime, 2);
 	}
 }

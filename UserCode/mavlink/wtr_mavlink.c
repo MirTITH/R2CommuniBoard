@@ -19,7 +19,7 @@ WTR_MAVLink_handle_t hMAVLink[MAVLINK_COMM_NUM_BUFFERS];
  * @param huart
  * @return WTR_MAVLink_handle_t* 找不到返回 NULL
  */
-inline WTR_MAVLink_handle_t *Find_MAVLink_COMM(UART_HandleTypeDef *huart)
+WTR_MAVLink_handle_t *Find_MAVLink_COMM(UART_HandleTypeDef *huart)
 {
 	for (int i = 0; i < MAVLINK_COMM_NUM_BUFFERS; i++)
 	{
@@ -29,7 +29,7 @@ inline WTR_MAVLink_handle_t *Find_MAVLink_COMM(UART_HandleTypeDef *huart)
 	return NULL;
 }
 
-inline void WTR_MAVLink_Rcv(WTR_MAVLink_handle_t *hmav)
+void WTR_MAVLink_Rcv(WTR_MAVLink_handle_t *hmav)
 {
 	HAL_UART_Receive_IT(hmav->huart, &hmav->rx_ch, 1);
 }
