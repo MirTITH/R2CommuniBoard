@@ -51,6 +51,7 @@ void CanDataDecode(CAN_RxHeaderTypeDef RxHeader){
   
 }
 
+extern int can_rx_count;
 
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan){
 	CAN_RxHeaderTypeDef   RxHeader;
@@ -59,6 +60,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan){
     Error_Handler();            //错误状濁回调函敿
   }
 
+  can_rx_count++;
   CanDataDecode(RxHeader);   //根据电机号对CAN接收进行解码
 }
 

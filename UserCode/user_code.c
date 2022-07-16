@@ -9,11 +9,6 @@
  *
  */
 
-/*
-osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 256);
-defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
-*/
-
 #include "user_code.h"
 #include "CLI.h"
 #include "uart_device.h"
@@ -23,57 +18,72 @@ defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 #include "DJI.h"
 #include "wtr_can.h"
 #include "Caculate.h"
-#include "vesc.h"
-#include "uart_com.h"
+#include "wtr_mavlink.h"
 #include "string.h"
 #include <stdbool.h>
-#include "chassis_control.h"
-
-extern int fix_counter;
-
-bool pnt_UC_Debug_Data = true;
+#include "upper_control.h"
 
 void TestTask(void const *argument);
 
-UC_Data_t RxData = {0};
+mavlink_upper_t UpperData = {0};
+
+int can_rx_count = 0;
 
 void StartDefaultTask(void const *argument)
 {
-	CLI_Init(&huart1);
-	UD_SetPrintfDevice(UD_Find(&huart1));
+	osDelay(500);
+
+	CLI_Init(&huart6);
+	UD_SetPrintfDevice(UD_Find(&huart6));
 
 	osThreadDef(testTask, TestTask, osPriorityNormal, 0, 256);
 	osThreadCreate(osThread(testTask), NULL);
 
-	//大疆电机初始化
+	DJI_PID_Init();
+
+	UpperTaskInit();
+
+	DJI_motorType_Init();
 	CANFilterInit(&hcan1);
-	hDJI[0].motorType = M3508; // 爪子
-	hDJI[1].motorType = M2006;
-	hDJI[2].motorType = M3508; // 升降
-	DJI_Init();
-	UC_Receive_Start(1, &hlpuart1, &RxData);
-	// ChassisTaskStart(&RxData);
+
+	WTR_MAVLink_Init(&huart3, MAVLINK_COMM_0);
+	WTR_MAVLink_RcvStart(MAVLINK_COMM_0);
+
+	UpperTaskStart(&UpperData);
 
 	// ADS1256_Init();
 
 	while (1)
 	{
-		osDelay(10000);
+		// UD_printf("YAW:%6d Wz_Raw:%6d Wz_C:%6d V:%6d\n", hhwt1.raw_data.Yaw, hhwt1.raw_data.Wz_Raw, hhwt1.raw_data.Wz_Corrected, hhwt1.raw_data.V);
+		// UD_printf("YAW:%f Wz:%f YAW_rad:%f Wz_rad:%f \n", HWT_ReadYawDeg(&hhwt1), HWT_ReadWzDeg(&hhwt1), HWT_ReadYawRad(&hhwt1), HWT_ReadWzRad(&hhwt1));
+		osDelay(1000);
 	}
 }
 
+bool pnt_UpperData = false;
+bool pnt_can_rx_count = false;
 void TestTask(void const *argument)
 {
 	for (;;)
 	{
-		if (pnt_UC_Debug_Data)
+		if (pnt_UpperData)
 		{
-			UC_print_debug_data();
+			UD_printf("servo_type:%x claw_OC_DJI:%5g claw_OC_L:%4d claw_OC_R:%4d claw_spin:%5g lift:%5g vice_lift:%d\n",
+					  UpperData.servo_type,
+					  UpperData.claw_OC_DJI,
+					  UpperData.claw_OC_L,
+					  UpperData.claw_OC_R,
+					  UpperData.claw_spin,
+					  UpperData.lift,
+					  UpperData.vice_lift);
 		}
 
-		UD_printf("lx:%5d ly:%5d rx:%5d ry:%5d ", RxData.Leftx, RxData.Lefty, RxData.Rightx, RxData.Righty);
-		UD_printf("but:%x\n", RxData.buttons);
-		// UD_printf("fix counter: %d\n", fix_counter);
+		if (pnt_can_rx_count)
+		{
+			UD_printf("can_rx_count:%d\n", can_rx_count);
+		}
+
 		osDelay(500);
 	}
 }

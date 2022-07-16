@@ -90,7 +90,7 @@
 // 	hDJI[5].motorType = M2006;
 // 	hDJI[6].motorType = M2006;
 // 	hDJI[7].motorType = M2006;
-// 	DJI_Init();
+// 	DJI_motorType_Init();
 
 // 	hDJI[0].speedPID.outputMax = 8000;
 // 	hDJI[2].speedPID.outputMax = 12000;

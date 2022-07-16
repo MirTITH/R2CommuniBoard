@@ -23,6 +23,7 @@
 #include "crc.h"
 #include "dma.h"
 #include "usart.h"
+#include "tim.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -95,6 +96,9 @@ int main(void)
   MX_USART1_UART_Init();
   MX_CRC_Init();
   MX_CAN1_Init();
+  MX_USART3_UART_Init();
+  MX_TIM2_Init();
+  MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */

@@ -19,12 +19,8 @@
  */
 void vRegisterCustomCLICommands(void)
 {
-	CLI_New_Command(testvar, set CLI_test_var, F_Set_CLI_test_var, -1);
-	// CLI_New_Command(sc, shengjiang zhuazi, F_Set_shangceng, -1);
-	CLI_New_Command(joystkl, joystick left_x left_y, F_Set_joystickL, 2);
-	CLI_New_Command(joystkr, joystick right_x right_y, F_Set_joystickR, 2);
 	CLI_New_Command(kamimadoka, kami.im, F_kamimadoka, 0);
-	CLI_New_Command(pnt_uart_com, print uart com message, F_pnt, 0);
+	CLI_New_Command(pnt, print, F_pnt, -1);
 	CLI_New_Command(reboot, reboot, F_reboot, 0);
 }
 
@@ -87,10 +83,32 @@ BaseType_t F_kamimadoka(char *pcWriteBuffer, size_t xWriteBufferLen, const char 
 
 //-------------------------------自定义命令写在下面（记得在上面的vRegisterCustomCLICommands()中注册）--------------------------
 
-extern bool pnt_UC_Debug_Data;
+extern bool pnt_UpperData;
+extern bool pnt_can_rx_count;
+extern int fix_counter;
 BaseType_t F_pnt(char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString) 
 {
-	pnt_UC_Debug_Data = !pnt_UC_Debug_Data;
+	BaseType_t xParameterStringLength;
+	const char *pcParameter;
+	pcParameter = FreeRTOS_CLIGetParameter(pcCommandString, 1, &xParameterStringLength);
+
+	if (strcmp(pcParameter, "fix_counter") == 0)
+	{
+		UD_printf("fix_counter: %d\n", fix_counter);
+	}
+	else if (strcmp(pcParameter, "UpperData") == 0)
+	{
+		pnt_UpperData = !pnt_UpperData;
+	}
+	else if (strcmp(pcParameter, "can_rx_count") == 0)
+	{
+		pnt_can_rx_count = !pnt_can_rx_count;
+	}
+	else
+	{
+		UD_printf("pnt fix_counter | UpperData | can_rx_count\n");
+	}
+	
 	return pdFAIL;
 }
 
@@ -98,73 +116,4 @@ BaseType_t F_reboot(char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcC
 {
 	HAL_NVIC_SystemReset();
 	return pdFAIL;
-}
-
-// extern double speed_shengjiang;
-// extern double speed_zhuazi;
-// BaseType_t F_Set_shangceng(char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString) 
-// {
-// 	BaseType_t xParameterStringLength;
-// 	const char *pcParameter;
-// 	pcParameter = FreeRTOS_CLIGetParameter(pcCommandString, 1, &xParameterStringLength);
-
-// 	// UD_printf("enter\n", speed_zhuazi);
-
-// 	// HAL_Delay(2);
-
-// 	if (pcParameter != NULL) // 说明没有带参数
-// 	{
-// 		speed_zhuazi = atof(pcParameter);
-// 		// UD_printf("z %g ", speed_zhuazi);
-// 	}
-// 	pcParameter = FreeRTOS_CLIGetParameter(pcCommandString, 2, &xParameterStringLength);
-
-// 	if (pcParameter != NULL) // 说明没有带参数
-// 	{
-// 		speed_shengjiang = atof(pcParameter);
-// 		// UD_printf("s %g\n", speed_shengjiang);
-// 	}
-// 	return pdFALSE; // 结束执行
-// }
-
-#include "uart_com.h"
-extern UC_Data_t RxData;
-BaseType_t F_Set_joystickL(char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString) 
-{
-	BaseType_t xParameterStringLength;
-	const char *pcParameter;
-	pcParameter = FreeRTOS_CLIGetParameter(pcCommandString, 1, &xParameterStringLength);
-
-	if (pcParameter != NULL)
-	{
-		RxData.Leftx = atof(pcParameter);
-	}
-	pcParameter = FreeRTOS_CLIGetParameter(pcCommandString, 2, &xParameterStringLength);
-
-	if (pcParameter != NULL)
-	{
-		RxData.Lefty = atof(pcParameter);
-	}
-
-	return pdFALSE; // 结束执行
-}
-
-BaseType_t F_Set_joystickR(char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString) 
-{
-	BaseType_t xParameterStringLength;
-	const char *pcParameter;
-	pcParameter = FreeRTOS_CLIGetParameter(pcCommandString, 1, &xParameterStringLength);
-
-	if (pcParameter != NULL)
-	{
-		RxData.Rightx = atof(pcParameter);
-	}
-	pcParameter = FreeRTOS_CLIGetParameter(pcCommandString, 2, &xParameterStringLength);
-
-	if (pcParameter != NULL)
-	{
-		RxData.Righty = atof(pcParameter);
-	}
-
-	return pdFALSE; // 结束执行
 }

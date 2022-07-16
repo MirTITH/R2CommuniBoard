@@ -1,45 +1,124 @@
-// /**
-//  * @file upper_control.c
-//  * @author TITH (1023515576@qq.com)
-//  * @brief 上层控制
-//  * @version 0.1
-//  * @date 2022-07-11
-//  * 
-//  * @copyright Copyright (c) 2022
-//  * 
-//  */
+/**
+ * @file upper_control.c
+ * @author TITH (1023515576@qq.com)
+ * @brief 上层控制
+ * @version 0.1
+ * @date 2022-07-11
+ *
+ * @copyright Copyright (c) 2022
+ *
+ */
 
-// void UpperTask(void const *argument)
-// {
-// 	const UC_Data_t *RxData = argument;
-// 	Chassis_Init(wheels);
-// 	double joystick_lx, joystick_ly, joystick_rx, joystick_ry;
+#include "main.h"
+#include "DJI.h"
+#include "Caculate.h"
+#include "upper_control.h"
+#include "cmsis_os.h"
+#include "math.h"
+#include "uart_device.h"
+#include "tim.h"
+#include <stdbool.h>
 
-// 	uint32_t PreviousWakeTime = osKernelSysTick();
+void UpperTaskInit()
+{
+	// 升降
+	hDJI[0].motorType = M3508;
+	hDJI[0].speedPID.outputMax = 5000;
+	hDJI[0].posPID.outputMax = 6000;
+	hDJI[0].posPID.KP = 20.0f;
 
-// 	for (;;)
-// 	{
-// 		joystick_lx = RxData->Leftx;
-// 		joystick_ly = RxData->Lefty;
-// 		joystick_rx = RxData->Rightx;
-// 		joystick_ry = RxData->Righty;
+	// 爪子旋转
+	hDJI[1].motorType = M2006;
 
-// 		if (fabs(joystick_lx) < 500) joystick_lx = 0;
-// 		if (fabs(joystick_ly) < 500) joystick_ly = 0;
-// 		if (fabs(joystick_rx) < 500) joystick_rx = 0;
-// 		if (fabs(joystick_ry) < 500) joystick_ry = 0;
+	// 爪子夹具
+	hDJI[2].motorType = M3508;
+	hDJI[2].speedPID.outputMax = 2000;
 
-// 		Chassis_SetSpeed(wheels, 4, joystick_lx / 2048.0, joystick_ly / 2048.0, joystick_rx / 2048.0);
+	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2);
+}
 
-// 		osDelayUntil(&PreviousWakeTime, 2);
-// 	}	
-// }
+void UpperTask(void const *argument)
+{
+	const mavlink_upper_t *UpperData = argument;
+	// double lift_speed;
 
-// void UpperTaskStart(&RxData)
-// {
-// 	osThreadDef(upper, UpperTask, osPriorityBelowNormal, 0, 256);
-// 	osThreadCreate(osThread(chassis), RxData);
+	uint32_t PreviousWakeTime = osKernelSysTick();
 
-// 	osThreadDef(upper_test, UpperTestTask, osPriorityBelowNormal, 0, 256);
-// 	osThreadCreate(osThread(chassis_test), NULL);
-// }
+	for (;;)
+	{
+		// 升降架
+		if (UpperData->servo_type & 1)
+		{
+			speedServo(UpperData->lift, &hDJI[0]);
+		}
+		else
+		{
+			positionServo(UpperData->lift, &hDJI[0]);
+		}
+
+		// 爪子开合（大疆电机）
+		if (UpperData->servo_type & (1 << 1))
+		{
+			speedServo(UpperData->claw_OC_DJI, &hDJI[2]);
+		}
+		else
+		{
+			positionServo(UpperData->claw_OC_DJI, &hDJI[2]);
+		}
+
+		// 爪子舵机
+		__HAL_TIM_SetCompare(&htim4, TIM_CHANNEL_1, UpperData->claw_OC_L);
+		__HAL_TIM_SetCompare(&htim12, TIM_CHANNEL_2, UpperData->claw_OC_R);
+
+		// 爪子旋转
+		if (UpperData->servo_type & (1 << 2))
+		{
+			speedServo(UpperData->claw_spin, &hDJI[1]);
+		}
+		else
+		{
+			positionServo(UpperData->claw_spin, &hDJI[1]);
+		}
+
+		switch (UpperData->vice_lift)
+		{
+		case 0:
+			// 降下来
+			break;
+		case 1:
+			// 升上去
+			break;
+		default:
+			break;
+		}
+
+		// if (claw_open)
+		// {
+		// 	Claw_Steer_pw[0] = 1076;
+		// 	Claw_Steer_pw[1] = 1195;
+		// }
+		// else
+		// {
+		// 	Claw_Steer_pw[0] = 1694;
+		// 	Claw_Steer_pw[1] = 1767;
+		// }
+
+		CanTransmit_DJI_1234(&hcan1,
+							 hDJI[0].speedPID.output,
+							 hDJI[1].speedPID.output,
+							 hDJI[2].speedPID.output,
+							 hDJI[3].speedPID.output);
+
+		osDelayUntil(&PreviousWakeTime, 2);
+	}
+}
+
+void UpperTaskStart(mavlink_upper_t *UpperData)
+{
+	osThreadDef(upper, UpperTask, osPriorityBelowNormal, 0, 1024);
+	osThreadCreate(osThread(upper), UpperData);
+
+	// osThreadDef(upper_test, UpperTestTask, osPriorityBelowNormal, 0, 256);
+	// osThreadCreate(osThread(chassis_test), NULL);
+}

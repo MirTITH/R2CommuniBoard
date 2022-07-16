@@ -4,31 +4,40 @@
 
 int a = 0;
 DJI_t hDJI[8];
-//使用DJI init前需要指定motorType
-void DJI_Init(){
-	for (int i = 0; i < 8; i++)
-    {
-        hDJI[i].speedPID.KP = 15;
-        hDJI[i].speedPID.KI = 1;
-        hDJI[i].speedPID.KD = 1;
-        hDJI[i].speedPID.outputMax = 8000;
 
-        hDJI[i].posPID.KP = 100.0f;
-        hDJI[i].posPID.KI = 0;
-        hDJI[i].posPID.KD = 0;
-        hDJI[i].posPID.outputMax = 15000;
-			  hDJI[i].posPID.outputMin = 0;   // 
-        
-		if( hDJI[i].motorType == M3508 ){
-			hDJI[i].reductionRate = 3591.0f/187.0f;//2006减速比为36 3508减速比约为19
+void DJI_PID_Init()
+{
+	for (int i = 0; i < 8; i++)
+	{
+		hDJI[i].speedPID.KP = 15;
+		hDJI[i].speedPID.KI = 1;
+		hDJI[i].speedPID.KD = 1;
+		hDJI[i].speedPID.outputMax = 8000;
+
+		hDJI[i].posPID.KP = 100.0f;
+		hDJI[i].posPID.KI = 0;
+		hDJI[i].posPID.KD = 0;
+		hDJI[i].posPID.outputMax = 15000;
+		hDJI[i].posPID.outputMin = 0;
+	}
+}
+
+//使用 DJI_motorType_Init 前需要指定motorType
+void DJI_motorType_Init()
+{
+	for (int i = 0; i < 8; i++)
+	{
+		if (hDJI[i].motorType == M3508)
+		{
+			hDJI[i].reductionRate = 3591.0f / 187.0f; // 2006减速比为36 3508减速比约为19
 		}
-		else if(hDJI[i].motorType == M2006){
+		else if (hDJI[i].motorType == M2006)
+		{
 			hDJI[i].reductionRate = 36.0f;
 		}
-        
-        hDJI[i].encoder_resolution = 8192.0f;
-    }
-    
+
+		hDJI[i].encoder_resolution = 8192.0f;
+	}
 }
 
 static uint32_t TxMailbox;

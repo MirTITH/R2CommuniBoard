@@ -61,7 +61,8 @@ extern DJI_t hDJI[8];
 void CanTransmit_DJI_1234(CAN_HandleTypeDef *hcanx, int16_t cm1_iq, int16_t cm2_iq, int16_t cm3_iq, int16_t cm4_iq);
 void CanTransmit_DJI_5678(CAN_HandleTypeDef *hcanx, int16_t cm5_iq, int16_t cm6_iq, int16_t cm7_iq, int16_t cm8_iq);
 
-void DJI_Init();
+void DJI_motorType_Init();
+void DJI_PID_Init();
 
 HAL_StatusTypeDef DJI_CanMsgDecode(uint32_t Stdid, uint8_t* fdbData);
 
