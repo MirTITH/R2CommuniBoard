@@ -15,8 +15,8 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	UD_RxCpltCallback(huart);
 	WTR_MAVLink_UART_RxCpltCallback(huart);
+	UD_RxCpltCallback(huart);
 }
 
 extern mavlink_upper_t UpperData;

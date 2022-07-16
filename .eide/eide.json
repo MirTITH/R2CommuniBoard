@@ -55,7 +55,6 @@
   },
   "uploader": "OpenOCD",
   "srcDirs": [
-    "./.eide/deps",
     "./Core",
     "./Drivers",
     "./Middlewares",
@@ -74,7 +73,7 @@
   "uploadConfig": {
     "bin": "",
     "target": "stm32l4x",
-    "interface": "stlink",
+    "interface": "cmsis-dap",
     "baseAddr": "0x08000000"
   },
   "uploadConfigMap": {

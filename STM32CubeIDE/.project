@@ -57,16 +57,6 @@
 			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c</locationURI>
 		</link>
 		<link>
-			<name>Drivers/STM32L4xx_HAL_Driver/stm32l4xx_hal_crc.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_crc.c</locationURI>
-		</link>
-		<link>
-			<name>Drivers/STM32L4xx_HAL_Driver/stm32l4xx_hal_crc_ex.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_crc_ex.c</locationURI>
-		</link>
-		<link>
 			<name>Drivers/STM32L4xx_HAL_Driver/stm32l4xx_hal_dma.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma.c</locationURI>
@@ -205,11 +195,6 @@
 			<name>Application/User/Core/can.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/can.c</locationURI>
-		</link>
-		<link>
-			<name>Application/User/Core/crc.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/crc.c</locationURI>
 		</link>
 		<link>
 			<name>Application/User/Core/dma.c</name>

@@ -16,7 +16,7 @@
 
 #define MAX_UartDevice_Num 4
 
-static UART_DEVICE *uart_devices[MAX_UartDevice_Num] = {NULL};
+UART_DEVICE *uart_devices[MAX_UartDevice_Num] = {NULL};
 
 UART_DEVICE *printf_uart_device = NULL;
 
@@ -174,9 +174,7 @@ UART_DEVICE *UD_Find(UART_HandleTypeDef *huart)
 
 	for (int i = 0; i < MAX_UartDevice_Num; i++)
 	{
-		if (uart_devices[i] == NULL) continue;
-		
-		if (uart_devices[i]->huart->Instance == huart->Instance)
+		if (uart_devices[i]->huart == huart)
 		{
 			return uart_devices[i];
 		}
@@ -473,36 +471,4 @@ BaseType_t UD_Read(UART_DEVICE *uart_device, void *const read_buffer, uint32_t t
 		return pdFAIL;
 
 	return xQueueReceive(uart_device->rx_queue, read_buffer, timeout);
-}
-
-void UD_TxCpltCallback(UART_HandleTypeDef *huart)
-{
-	UART_DEVICE *uart_device = UD_Find(huart);
-
-	if (uart_device != NULL && uart_device->is_open != pdFALSE)
-	{
-		BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-		xSemaphoreGiveFromISR(uart_device->tx_sem, &xHigherPriorityTaskWoken);
-		portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-	}
-}
-
-void UD_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-	UART_DEVICE *uart_device = UD_Find(huart);
-
-	if (uart_device != NULL)
-	{
-		if (uart_device->is_open != pdFALSE)
-		{
-			BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-			xQueueSendFromISR(uart_device->rx_queue, &uart_device->rx_temp_buffer, &xHigherPriorityTaskWoken);
-			uart_device->RxFunc(uart_device->huart, (char*)&uart_device->rx_temp_buffer, 1);
-			portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-		}
-		else
-		{
-			uart_device->RxFunc(uart_device->huart, (char*)&uart_device->rx_temp_buffer, 1);
-		}
-	}
 }

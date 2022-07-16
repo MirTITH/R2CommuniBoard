@@ -31,10 +31,8 @@ int can_rx_count = 0;
 
 void StartDefaultTask(void const *argument)
 {
-	osDelay(500);
-
-	// CLI_Init(&huart3);
-	// UD_SetPrintfDevice(UD_Find(&huart3));
+	CLI_Init(&huart1);
+	UD_SetPrintfDevice(UD_Find(&huart1));
 
 	osThreadDef(testTask, TestTask, osPriorityNormal, 0, 256);
 	osThreadCreate(osThread(testTask), NULL);
@@ -46,10 +44,10 @@ void StartDefaultTask(void const *argument)
 	DJI_motorType_Init();
 	CANFilterInit(&hcan1);
 
-	WTR_MAVLink_Init(&huart1, MAVLINK_COMM_0);
+	WTR_MAVLink_Init(&hlpuart1, MAVLINK_COMM_0);
 	WTR_MAVLink_RcvStart(MAVLINK_COMM_0);
 
-	UpperTaskStart(&UpperData);
+ 	UpperTaskStart(&UpperData);
 
 	// ADS1256_Init();
 
@@ -83,6 +81,9 @@ void TestTask(void const *argument)
 		{
 			UD_printf("can_rx_count:%d\n", can_rx_count);
 		}
+
+		UD_printf("%d ", UpperData.claw_OC_R);
+		UD_printf("parse_error: %d\n", hMAVLink[0].status.parse_error);
 
 		osDelay(500);
 	}
