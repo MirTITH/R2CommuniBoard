@@ -16,7 +16,7 @@
 
 #define MAX_UartDevice_Num 4
 
-UART_DEVICE *uart_devices[MAX_UartDevice_Num] = {NULL};
+static UART_DEVICE *uart_devices[MAX_UartDevice_Num] = {NULL};
 
 UART_DEVICE *printf_uart_device = NULL;
 

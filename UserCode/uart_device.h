@@ -30,7 +30,7 @@
 typedef struct
 {
 	UART_HandleTypeDef *huart;
-	uint8_t is_open;
+	volatile uint8_t is_open;
 	uint16_t word_length;
 
 	char *tx_buffer;
