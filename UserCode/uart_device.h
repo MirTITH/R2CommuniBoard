@@ -30,7 +30,7 @@
 typedef struct
 {
 	UART_HandleTypeDef *huart;
-	volatile uint8_t is_open;
+	uint8_t is_open;
 	uint16_t word_length;
 
 	char *tx_buffer;
@@ -149,42 +149,14 @@ BaseType_t UD_Read(UART_DEVICE *uart_device,void *const read_buffer,uint32_t tim
  * 
  * @param huart 串口句柄
  */
-static inline void UD_TxCpltCallback(UART_HandleTypeDef *huart)
-{
-	UART_DEVICE *uart_device = UD_Find(huart);
-
-	if (uart_device != NULL && uart_device->is_open != pdFALSE)
-	{
-		BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-		xSemaphoreGiveFromISR(uart_device->tx_sem, &xHigherPriorityTaskWoken);
-		portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-	}
-}
+void UD_TxCpltCallback(UART_HandleTypeDef *huart);
 
 /**
  * @brief 请在HAL_UART_RxCpltCallback()中调用此函数
  * 
  * @param huart 串口句柄
  */
-static inline void UD_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-	UART_DEVICE *uart_device = UD_Find(huart);
-
-	if (uart_device != NULL)
-	{
-		if (uart_device->is_open != pdFALSE)
-		{
-			BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-			xQueueSendFromISR(uart_device->rx_queue, &uart_device->rx_temp_buffer, &xHigherPriorityTaskWoken);
-			uart_device->RxFunc(uart_device->huart, (char*)&uart_device->rx_temp_buffer, 1);
-			portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-		}
-		else
-		{
-			uart_device->RxFunc(uart_device->huart, (char*)&uart_device->rx_temp_buffer, 1);
-		}
-	}
-}
+void UD_RxCpltCallback(UART_HandleTypeDef *huart);
 
 /**
  * @brief 使用 UartDevice 的 printf ，比普通的更高效且线程安全。需要先设置使用哪个 UartDevice ，并且 txbuff 的长度要合理，否则会截断

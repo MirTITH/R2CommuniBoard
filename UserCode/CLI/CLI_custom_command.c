@@ -22,6 +22,7 @@ void vRegisterCustomCLICommands(void)
 	CLI_New_Command(kamimadoka, kami.im, F_kamimadoka, 0);
 	CLI_New_Command(pnt, print, F_pnt, -1);
 	CLI_New_Command(reboot, reboot, F_reboot, 0);
+	// CLI_New_Command(cspd, claw speed, F_cspd, -1);
 }
 
 //-------------------------------示例命令--------------------------
@@ -117,3 +118,19 @@ BaseType_t F_reboot(char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcC
 	HAL_NVIC_SystemReset();
 	return pdFAIL;
 }
+
+// extern float claw_speed;
+// BaseType_t F_cspd(char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString)
+// {
+// 	BaseType_t xParameterStringLength;
+// 	const char *pcParameter;
+// 	pcParameter = FreeRTOS_CLIGetParameter(pcCommandString, 1, &xParameterStringLength);
+
+// 	if (pcParameter != NULL) // 说明没有带参数
+// 	{
+// 		claw_speed = atof(pcParameter);
+// 	}
+
+// 	UD_printf("claw_speed:%g\n", claw_speed);
+// 	return pdFALSE; // 结束执行
+// }

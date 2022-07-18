@@ -59,7 +59,7 @@ void StartDefaultTask(void const *argument)
 	}
 }
 
-bool pnt_UpperData = false;
+bool pnt_UpperData = true;
 bool pnt_can_rx_count = false;
 void TestTask(void const *argument)
 {
