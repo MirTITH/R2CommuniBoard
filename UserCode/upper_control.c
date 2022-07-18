@@ -19,29 +19,6 @@
 #include "tim.h"
 #include <stdbool.h>
 
-#define ServoTypePos 0
-#define ServoTypeSpeed 1
-
-volatile mavlink_upper_t *UpperTaskData;
-mavlink_upper_t UpperInitData = {0};
-mavlink_upper_t *UpperRxData = NULL;
-
-CLAW_OC_t claw_oc = {
-	.max_current_init = 2000,
-	.max_current_normal = 1500,
-	.max_speed = 3000,
-	// .jimu[0][0] = ,
-	// .jimu[0][1] = ,
-	.jimu[1][0] = 4283.6,
-	// .jimu[1][1] = ,
-	// .jimu[2][0] = ,
-	// .jimu[2][1] = ,
-	// .jimu[3][0] = ,
-	// .jimu[3][1] = ,
-	// .jimu[4][0] = ,
-	// .jimu[4][1] = ,
-};
-
 void UpperTaskInit()
 {
 	// 升降
@@ -55,84 +32,17 @@ void UpperTaskInit()
 
 	// 爪子夹具
 	hDJI[2].motorType = M3508;
-	hDJI[2].speedPID.outputMax = claw_oc.max_current_init;
-	hDJI[2].posPID.outputMax = claw_oc.max_speed;
+	hDJI[2].speedPID.outputMax = 2000;
+	hDJI[2].posPID.outputMax = 2000;
 
 	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
 }
 
-/**
- * @brief 机械初始化
- * 
- * @param argument 
- */
-void Mec_InitTask(void const *argument)
-{
-	osDelay(500);
-	mavlink_upper_t *UpperRxData = (mavlink_upper_t *)argument;
-	UpperInitData.servo_type = (ServoTypePos << 0) |
-							   (ServoTypePos << 1) |
-							   (ServoTypePos << 2);
-	
-	// 爪子开闭 DJI
-	hDJI[2].speedPID.outputMax = claw_oc.max_current_init;
-	int counter = 0;
-
-	// // 闭合
-	// counter = 0;
-	// UpperInitData.claw_OC_DJI = -1000;
-
-	// while (counter < 200)
-	// {
-	// 	if (fabs(hDJI[2].FdbData.rpm) < 20)
-	// 	{
-	// 		counter++;
-	// 	}
-	// 	else
-	// 	{
-	// 		counter = 0;
-	// 	}
-	// 	osDelay(5);
-	// }
-	// claw_oc.min_pos = hDJI[2].Calculate.RotorAngle_all;
-
-	// 张开
-	UpperInitData.claw_OC_DJI = 590;
-
-	counter = 0;
-	while (counter < 200)
-	{
-		if (fabs(hDJI[2].FdbData.rpm) < 500)
-		{
-			counter++;
-		}
-		else
-		{
-			counter = 0;
-		}
-		osDelay(5);
-	}
-	claw_oc.max_pos = hDJI[2].Calculate.RotorAngle_all;
-
-	osDelay(1000);
-
-	UpperInitData.claw_OC_DJI = 10;
-
-	while (1)
-	{
-		osDelay(10);
-	}
-	
-
-	// UpperTaskData = UpperRxData;
-	vTaskDelete(NULL);
-}
-
 void UpperTask(void const *argument)
 {
+	mavlink_upper_t *UpperTaskData = (mavlink_upper_t *)argument;
 	uint32_t PreviousWakeTime = osKernelSysTick();
-
 	for (;;)
 	{
 		// 升降架
@@ -206,7 +116,7 @@ void UpperTestTask(void const *argument)
 {
 	while (1)
 	{
-		UD_printf("RotorAngle_all:%f\n", hDJI[2].Calculate.RotorAngle_all);
+		// UD_printf("RotorAngle_all:%f\n", hDJI[2].Calculate.RotorAngle_all);
 		osDelay(500);
 	}
 	
@@ -214,13 +124,8 @@ void UpperTestTask(void const *argument)
 
 void UpperTaskStart(mavlink_upper_t *UpperData)
 {
-	UpperTaskData = &UpperInitData;
-
 	osThreadDef(upper, UpperTask, osPriorityNormal, 0, 1024);
-	osThreadCreate(osThread(upper), NULL);
-
-	osThreadDef(mec_init, Mec_InitTask, osPriorityNormal, 0, 1024);
-	osThreadCreate(osThread(mec_init), UpperRxData);
+	osThreadCreate(osThread(upper), UpperData);
 
 	osThreadDef(upper_test, UpperTestTask, osPriorityBelowNormal, 0, 256);
 	osThreadCreate(osThread(upper_test), NULL);
