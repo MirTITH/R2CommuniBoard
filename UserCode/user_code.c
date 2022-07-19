@@ -34,7 +34,7 @@ void StartDefaultTask(void const *argument)
 	CLI_Init(&huart1);
 	UD_SetPrintfDevice(UD_Find(&huart1));
 
-	osThreadDef(testTask, TestTask, osPriorityNormal, 0, 256);
+	osThreadDef(testTask, TestTask, osPriorityNormal, 0, 512);
 	osThreadCreate(osThread(testTask), NULL);
 
 	DJI_PID_Init();
