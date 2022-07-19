@@ -82,10 +82,10 @@ void UpperTask(void const *argument)
 		switch (UpperTaskData->vice_lift)
 		{
 		case 0:
-			// 降下来
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, 0); // 降下来
 			break;
 		case 1:
-			// 升上去
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, 1); // 升上去
 			break;
 		default:
 			break;
