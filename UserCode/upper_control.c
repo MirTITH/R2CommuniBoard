@@ -29,6 +29,8 @@ void UpperTaskInit()
 
 	// 爪子旋转
 	hDJI[1].motorType = M2006;
+	hDJI[1].speedPID.outputMax = 2000;
+	hDJI[1].posPID.outputMax = 2000;
 
 	// 爪子夹具
 	hDJI[2].motorType = M3508;
@@ -72,11 +74,11 @@ void UpperTask(void const *argument)
 		// 爪子旋转
 		if (UpperTaskData->servo_type & (1 << 2))
 		{
-			speedServo(UpperTaskData->claw_spin, &hDJI[1]);
+			speedServo(-UpperTaskData->claw_spin, &hDJI[1]);
 		}
 		else
 		{
-			positionServo(UpperTaskData->claw_spin, &hDJI[1]);
+			positionServo(-UpperTaskData->claw_spin, &hDJI[1]);
 		}
 
 		switch (UpperTaskData->vice_lift)
