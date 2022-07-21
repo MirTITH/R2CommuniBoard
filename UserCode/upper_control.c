@@ -23,9 +23,9 @@ void UpperTaskInit()
 {
 	// 升降
 	hDJI[0].motorType = M3508;
-	hDJI[0].speedPID.outputMax = 5000;
-	hDJI[0].posPID.outputMax = 6000;
-	hDJI[0].posPID.KP = 20.0f;
+	hDJI[0].speedPID.outputMax = 8000;
+	hDJI[0].posPID.outputMax = 8000;
+	hDJI[0].posPID.KP = 60.0f;
 
 	// 爪子旋转
 	hDJI[1].motorType = M2006;
@@ -35,7 +35,7 @@ void UpperTaskInit()
 	// 爪子夹具
 	hDJI[2].motorType = M3508;
 	hDJI[2].speedPID.outputMax = 2000;
-	hDJI[2].posPID.outputMax = 2000;
+	hDJI[2].posPID.outputMax = 3000;
 
 	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
