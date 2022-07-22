@@ -6,19 +6,20 @@
 #define LAST 0
 #define NOW 1
 
-typedef struct{
-    float KP;											//PID参数P
-    float KI;											//PID参数I
-    float KD;											//PID参数D
-    float fdb;											//PID反馈值
-    float ref;											//PID目标值
-    float cur_error;									//当前误差
-    float error[2];										//前两次误差
-    float output;										//输出值
-    float outputMax;									//最大输出值的绝对值
-	  float outputMin;                  //最小输出值的绝对值用于防抖
-
-}PID_t;
+typedef struct
+{
+    float KP;                // PID参数P
+    float KI;                // PID参数I
+    float KD;                // PID参数D
+    float fdb;               // PID反馈值
+    float ref;               // PID目标值
+    float cur_error;         //当前误差
+    float error[2];          //前两次误差
+    float output;            //输出值
+    float outputPositiveMax; // 正的最大输出值（应大于0）
+    float outputNegativeMax; // 负的最大输出值（应小于0）
+    float outputMin;         //最小输出值的绝对值用于防抖
+} PID_t;
 
 typedef enum{
     M3508 = 0,

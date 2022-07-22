@@ -22,10 +22,12 @@
 #include "string.h"
 #include <stdbool.h>
 #include "upper_control.h"
+#include "upper_com.h"
 
 void TestTask(void const *argument);
 
-mavlink_upper_t UpperData = {0};
+extern mavlink_upper_t UpperTxData;
+mavlink_controller_t ControllerData = {0};
 
 int can_rx_count = 0;
 
@@ -47,7 +49,9 @@ void StartDefaultTask(void const *argument)
 	WTR_MAVLink_Init(&hlpuart1, MAVLINK_COMM_0);
 	WTR_MAVLink_RcvStart(MAVLINK_COMM_0);
 
- 	UpperTaskStart(&UpperData);
+	UpperComTaskStart(&ControllerData);
+
+ 	UpperTaskStart(&UpperTxData);
 
 	// ADS1256_Init();
 
@@ -68,13 +72,13 @@ void TestTask(void const *argument)
 		if (pnt_UpperData)
 		{
 			UD_printf("servo_type:%x claw_OC_DJI:%5g claw_OC_L:%4d claw_OC_R:%4d claw_spin:%5g lift:%5g vice_lift:%d\n",
-					  UpperData.servo_type,
-					  UpperData.claw_OC_DJI,
-					  UpperData.claw_OC_L,
-					  UpperData.claw_OC_R,
-					  UpperData.claw_spin,
-					  UpperData.lift,
-					  UpperData.vice_lift);
+					  UpperTxData.servo_type,
+					  UpperTxData.claw_OC_DJI,
+					  UpperTxData.claw_OC_L,
+					  UpperTxData.claw_OC_R,
+					  UpperTxData.claw_spin,
+					  UpperTxData.lift,
+					  UpperTxData.vice_lift);
 		}
 
 		if (pnt_can_rx_count)
@@ -82,7 +86,7 @@ void TestTask(void const *argument)
 			UD_printf("can_rx_count:%d\n", can_rx_count);
 		}
 
-		UD_printf("%d ", UpperData.claw_OC_R);
+		UD_printf("%d ", UpperTxData.claw_OC_R);
 		UD_printf("parse_error: %d\n", hMAVLink[0].status.parse_error);
 
 		osDelay(500);

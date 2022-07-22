@@ -12,12 +12,14 @@ void DJI_PID_Init()
 		hDJI[i].speedPID.KP = 15;
 		hDJI[i].speedPID.KI = 1;
 		hDJI[i].speedPID.KD = 1;
-		hDJI[i].speedPID.outputMax = 8000;
+		hDJI[i].speedPID.outputPositiveMax = 8000;
+		hDJI[i].speedPID.outputNegativeMax = -8000;
 
 		hDJI[i].posPID.KP = 100.0f;
 		hDJI[i].posPID.KI = 0;
 		hDJI[i].posPID.KD = 0;
-		hDJI[i].posPID.outputMax = 15000;
+		hDJI[i].posPID.outputPositiveMax = 15000;
+		hDJI[i].posPID.outputNegativeMax = -15000;
 		hDJI[i].posPID.outputMin = 0;
 	}
 }

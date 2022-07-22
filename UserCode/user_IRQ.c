@@ -19,17 +19,17 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	UD_RxCpltCallback(huart);
 }
 
-extern mavlink_upper_t UpperData;
+extern mavlink_controller_t ControllerData;
 void WTR_MAVLink_Msg_RxCpltCallback(mavlink_message_t *msg)
 {
 	switch (msg->msgid)
 	{
 	case 1:
 		// id = 1 的消息对应的解码函数
+		mavlink_msg_controller_decode(msg, &ControllerData);
 		break;
-
 	case 2:
-		mavlink_msg_upper_decode(msg, &UpperData);
+		// mavlink_msg_upper_decode(msg, &UpperData);
 		break;
 	// ......
 	default:
