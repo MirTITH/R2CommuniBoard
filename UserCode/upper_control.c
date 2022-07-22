@@ -29,8 +29,8 @@ void UpperTaskInit()
 
 	// 爪子旋转
 	hDJI[1].motorType = M2006;
-	hDJI[1].speedPID.outputMax = 2000;
-	hDJI[1].posPID.outputMax = 2000;
+	hDJI[1].speedPID.outputMax = 3500;
+	hDJI[1].posPID.outputMax = 2500;
 
 	// 爪子夹具
 	hDJI[2].motorType = M3508;
