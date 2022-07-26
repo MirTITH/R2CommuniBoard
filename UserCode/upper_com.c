@@ -12,6 +12,7 @@
 #include "cmsis_os.h"
 #include "uart_device.h"
 #include <stdbool.h>
+#include "DJI.h"
 
 mavlink_upper_t UpperTxData;
 
@@ -46,7 +47,7 @@ LiftData_t lift_data = {
 	.max_pos = 6400,
 	.min_pos = 50,
 	.max_speed = 4000,
-	.vice_down_pos = 4500,
+	.vice_down_pos = 2500,
 	.vice_up_pos = 6300,
 	.joystick_deadband = 100
 	// .now_pos_id = 0,
@@ -68,6 +69,10 @@ typedef struct
 	uint32_t button_min_time;
 	float close_pos;
 	float open_pos;
+	float ClosePosPIDMax;
+	float OpenPosPIDMax;
+	float CloseSpeedPIDMax;
+	float OpenSpeedPIDMax;
 	bool is_open;
 } ClawData_t;
 
@@ -75,7 +80,12 @@ ClawData_t claw_data = {
 	.is_open = false,
 	.button_min_time = 500,
 	.close_pos = 10,
-	.open_pos = 585};
+	.open_pos = 590,
+	.ClosePosPIDMax = 3500,
+	.OpenPosPIDMax = 2750,
+	.CloseSpeedPIDMax = 3000,
+	.OpenSpeedPIDMax = 2000
+	};
 
 // typedef struct
 // {
@@ -162,20 +172,30 @@ void UpperComTask(void const *argument)
 		/* 爪子开合DJI */
 		if (ctrl_data->buttons & (1 << 2))
 		{
-			if (claw_data.last_tick + claw_data.button_min_time < HAL_GetTick())
+			if(fabs(hDJI[1].posPID.cur_error) < 100) // 马爷操作不行，给他加个旋转时防误触
 			{
-				claw_data.last_tick = HAL_GetTick();
-				claw_data.is_open = !claw_data.is_open;
-				// UD_printf("is_open:%d\n", claw_data.is_open);
+				if (claw_data.last_tick + claw_data.button_min_time < HAL_GetTick())
+				{
+					claw_data.last_tick = HAL_GetTick();
+					claw_data.is_open = !claw_data.is_open;	
+				}
 			}
 		}
 
 		if (claw_data.is_open)
 		{
+			hDJI[2].speedPID.outputPositiveMax = claw_data.OpenSpeedPIDMax;
+			hDJI[2].speedPID.outputNegativeMax = -claw_data.OpenSpeedPIDMax;
+			hDJI[2].posPID.outputPositiveMax = claw_data.OpenPosPIDMax;
+			hDJI[2].posPID.outputNegativeMax = -claw_data.OpenPosPIDMax;
 			UpperTxData.claw_OC_DJI = claw_data.open_pos;
 		}
 		else
 		{
+			hDJI[2].speedPID.outputPositiveMax = claw_data.CloseSpeedPIDMax;
+			hDJI[2].speedPID.outputNegativeMax = -claw_data.CloseSpeedPIDMax;
+			hDJI[2].posPID.outputPositiveMax = claw_data.ClosePosPIDMax;
+			hDJI[2].posPID.outputNegativeMax = -claw_data.ClosePosPIDMax;
 			UpperTxData.claw_OC_DJI = claw_data.close_pos;
 		}
 
@@ -201,7 +221,7 @@ void UpperComTask(void const *argument)
 		/* 爪子旋转 */
 		if (ctrl_data->buttons & (1 << 3))
 		{
-			if (UpperTxData.lift >= 2000) // 爪子太低时不允许旋转
+			if (UpperTxData.lift >= 2200) // 爪子太低时不允许旋转
 			{
 				if (claw_spin.last_tick + claw_spin.button_min_time < HAL_GetTick())
 				{
